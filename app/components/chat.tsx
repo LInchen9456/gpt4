@@ -46,6 +46,7 @@ import {
   useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
+  useUserStore
 } from "../store";
 
 import {
@@ -694,8 +695,23 @@ function _Chat() {
       }
     }
   };
+  const userStore = useUserStore();
+  const doSubmit = async (userInput: string) => {
+    let check = await fetch("/v1/chat/check", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+      body: JSON.stringify({
+        model: useAppConfig.getState().modelConfig.model
+      })
+    })
+    let checkData = await check.json()
+    if(checkData.code == 500){
+      userStore.setModalOpen(true)
+      return
+    }
 
-  const doSubmit = (userInput: string) => {
     if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);
     if (matchCommand.matched) {

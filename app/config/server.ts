@@ -7,7 +7,7 @@ declare global {
       PROXY_URL?: string; // docker only
 
       OPENAI_API_KEY?: string;
-      CODE?: string;
+      CODE?: any;
 
       BASE_URL?: string;
       OPENAI_ORG_ID?: string; // openai only

@@ -2,12 +2,12 @@ import {
   StoreKey,
 } from "../constant";
 import { createPersistStore } from "../utils/store";
-import { login } from '../api/user'
 import { getHeaders } from "../client/api";
 
 const DEFAULT_ACCESS_STATE = {
   userinfo: {},
-  token: ""
+  token: "",
+  modalOpen: false,
 };
 
 export const useUserStore = createPersistStore(
@@ -15,7 +15,7 @@ export const useUserStore = createPersistStore(
 
   (set, get) => ({
     login(username, smsCode) {
-      return fetch("http://vk6.nat300.top/charGtplogin", {
+      return fetch("/v1/charGtplogin", {
         method: "post",
         body: JSON.stringify({
           smsCode,
@@ -30,10 +30,16 @@ export const useUserStore = createPersistStore(
 
     },
 
+    setModalOpen(isOpen: boolean){
+      set({
+        modalOpen: isOpen,
+      });
+    },
+
     sendCode(username) {
       const formData = new FormData();
       formData.append("phone", username);
-      return fetch("http://vk6.nat300.top/send/phoneCode", {
+      return fetch("/v1/send/phoneCode", {
         method: "POST",
         body: formData
       })

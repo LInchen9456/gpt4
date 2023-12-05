@@ -1,6 +1,6 @@
 import { getClientConfig } from "../config/client";
 import { ACCESS_CODE_PREFIX, Azure, ServiceProvider } from "../constant";
-import { ChatMessage, ModelType, useAccessStore } from "../store";
+import { ChatMessage, ModelType, useAccessStore, useUserStore } from "../store";
 import { ChatGPTApi } from "./platforms/openai";
 
 export const ROLES = ["system", "user", "assistant"] as const;
@@ -127,29 +127,16 @@ export const api = new ClientApi();
 
 export function getHeaders() {
   const accessStore = useAccessStore.getState();
+  const userStore = useUserStore.getState();
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "x-requested-with": "XMLHttpRequest",
+    "Authorization": "Bearer " + userStore.token
   };
 
-  const isAzure = accessStore.provider === ServiceProvider.Azure;
-  const authHeader = isAzure ? "api-key" : "Authorization";
-  const apiKey = isAzure ? accessStore.azureApiKey : accessStore.openaiApiKey;
-
-  const makeBearer = (s: string) => `${isAzure ? "" : "Bearer "}${s.trim()}`;
-  const validString = (x: string) => x && x.length > 0;
 
   // use user's api key first
-  if (validString(apiKey)) {
-    headers[authHeader] = makeBearer(apiKey);
-  } else if (
-    accessStore.enabledAccessControl() &&
-    validString(accessStore.accessCode)
-  ) {
-    headers[authHeader] = makeBearer(
-      ACCESS_CODE_PREFIX + accessStore.accessCode,
-    );
-  }
 
   return headers;
 }

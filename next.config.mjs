@@ -81,8 +81,8 @@ if (mode !== "export") {
         destination: "https://sharegpt.com/api/conversations",
       },
       {
-        source: "/api",
-        destination: "http://vk6.nat300.top/:path*",
+        source: "/v1/:path*",
+        destination: "http://vk6.nat300.top/api/:path*",
       },
     ];
 

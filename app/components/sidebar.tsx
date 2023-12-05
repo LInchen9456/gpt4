@@ -172,19 +172,19 @@ export function SideBar(props: { className?: string }) {
       ),
     },
   ];
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
-    fetch("http://vk6.nat300.top/member/package/validPackageList", {
+    fetch("/v1/member/package/validPackageList", {
       headers: {
         Authorization: "Bearer " + userStore.token,
       },
     })
       .then((res) => res.json())
       .then((res: DangerConfig) => {
-        if (res.code === 200) {
+        const { code } = res
+        if (code === 200) {
           setDataSource(res.data);
-          setIsModalOpen(true);
+          userStore.setModalOpen(true)
         } else {
           messageApi.open({
             type: "error",
@@ -195,11 +195,13 @@ export function SideBar(props: { className?: string }) {
   };
 
   const handleOk = () => {
-    setIsModalOpen(false);
+
+    userStore.setModalOpen(false)
   };
 
   const handleCancel = () => {
-    setIsModalOpen(false);
+    userStore.setModalOpen(false)
+
   };
 
   const chatStore = useChatStore();
@@ -332,7 +334,7 @@ export function SideBar(props: { className?: string }) {
       </div>
       <Modal
         title="购买套餐"
-        open={isModalOpen}
+        open={userStore.modalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
