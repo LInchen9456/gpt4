@@ -16,7 +16,7 @@ import DragIcon from "../icons/drag.svg";
 import Locale from "../locales";
 
 import { useAppConfig, useChatStore, useUserStore } from "../store";
-import { message } from 'antd';
+import { message } from "antd";
 
 import {
   DEFAULT_SIDEBAR_WIDTH,
@@ -31,7 +31,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
-import { Modal, Table, Typography, Space } from 'antd';
+import { Modal, Table, Typography, Space } from "antd";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -133,28 +133,38 @@ function useDragSideBar() {
 export function SideBar(props: { className?: string }) {
   const [messageApi, contextHolder] = message.useMessage();
   const userStore = useUserStore();
-  const [dataSource, setDataSource] = useState([])
+  const [dataSource, setDataSource] = useState([]);
 
   const columns = [
     {
-      title: '套餐名称',
-      dataIndex: 'packageName',
-      key: 'packageName',
+      title: "套餐名称",
+      dataIndex: "packageName",
+      key: "packageName",
     },
     {
-      title: '套餐天数',
-      dataIndex: 'numberDays',
-      key: 'numberDays',
+      title: "套餐天数",
+      dataIndex: "numberDays",
+      key: "numberDays",
     },
     {
-      title: '套餐价格',
-      dataIndex: 'packagePrice',
-      key: 'packagePrice',
+      title: "套餐价格",
+      dataIndex: "packagePrice",
+      key: "packagePrice",
     },
     {
-      title: '操作',
+      title: "套餐价格",
+      dataIndex: "packagePrice",
+      key: "packagePrice",
+    },
+    {
+      title: "套餐类型",
+      dataIndex: "packageType",
+      key: "packageType",
+    },
+    {
+      title: "操作",
       width: 100,
-      fixed: 'right',
+      fixed: "right",
       render: () => (
         <Space>
           <Typography.Link>购买</Typography.Link>
@@ -167,22 +177,21 @@ export function SideBar(props: { className?: string }) {
   const showModal = () => {
     fetch("http://vk6.nat300.top/member/package/validPackageList", {
       headers: {
-        Authorization: 'Bearer ' + userStore.token
+        Authorization: "Bearer " + userStore.token,
       },
     })
       .then((res) => res.json())
       .then((res: DangerConfig) => {
         if (res.code === 200) {
-          setDataSource(res.data)
+          setDataSource(res.data);
           setIsModalOpen(true);
         } else {
           messageApi.open({
-            type: 'error',
+            type: "error",
             content: res.msg,
           });
-
         }
-      })
+      });
   };
 
   const handleOk = () => {
@@ -211,8 +220,9 @@ export function SideBar(props: { className?: string }) {
     <>
       {contextHolder}
       <div
-        className={`${styles.sidebar} ${props.className} ${shouldNarrow && styles["narrow-sidebar"]
-          }`}
+        className={`${styles.sidebar} ${props.className} ${
+          shouldNarrow && styles["narrow-sidebar"]
+        }`}
         style={{
           // #3016 disable transition on ios mobile screen
           transition: isMobileScreen && isIOSMobile ? "none" : undefined,
@@ -287,10 +297,13 @@ export function SideBar(props: { className?: string }) {
               </a>
             </div>
             <div className={styles["sidebar-action"]}>
-              <IconButton icon={<GithubIcon />}
+              <IconButton
+                icon={<GithubIcon />}
                 onClick={() => {
-                  showModal()
-                }} shadow />
+                  showModal();
+                }}
+                shadow
+              />
             </div>
           </div>
           <div>
@@ -317,7 +330,13 @@ export function SideBar(props: { className?: string }) {
           <DragIcon />
         </div>
       </div>
-      <Modal title="购买套餐" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} footer={null}>
+      <Modal
+        title="购买套餐"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
         <Table dataSource={dataSource} columns={columns} pagination={false} />
       </Modal>
     </>
