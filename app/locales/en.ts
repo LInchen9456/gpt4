@@ -5,7 +5,7 @@ import { LocaleType } from "./index";
 // if you are adding a new translation, please use PartialLocaleType instead of LocaleType
 
 const isApp = !!getClientConfig()?.isApp;
-const en: LocaleType = {
+const en: any = {
   WIP: "Coming Soon...",
   Error: {
     Unauthorized: isApp
@@ -444,8 +444,8 @@ const en: LocaleType = {
   },
   Exporter: {
     Description: {
-      Title: "Only messages after clearing the context will be displayed"
-    },  
+      Title: "Only messages after clearing the context will be displayed",
+    },
     Model: "Model",
     Messages: "Messages",
     Topic: "Topic",

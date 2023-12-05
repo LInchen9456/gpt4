@@ -5,10 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { useAccessStore, useUserStore } from "../store";
 import Locale from "../locales";
-import { Button, message, Form, Input, Space } from 'antd';
+import { Button, message, Form, Input, Space, ConfigProvider } from "antd";
 import { getHeaders } from "../client/api";
 import logo from "../../src-tauri/icons/icon.png";
-
 
 import BotIcon from "../icons/bot.svg";
 import { useEffect, useState } from "react";
@@ -24,21 +23,19 @@ export function AuthPage() {
   const goChat = () => {
     userStore.login(username, smsCode).then((res) => {
       if (res.code === 200) {
-        userStore.update(
-          (user) => (user.token = res.token),
-        )
+        userStore.update((user) => (user.token = res.token));
         messageApi.open({
-          type: 'success',
-          content: '登录成功',
+          type: "success",
+          content: "登录成功",
         });
-        navigate(Path.Chat)
+        navigate(Path.Chat);
       } else {
         messageApi.open({
-          type: 'error',
+          type: "error",
           content: res.msg,
         });
       }
-    })
+    });
   };
   const resetAccessCode = () => {
     accessStore.update((access) => {
@@ -54,7 +51,7 @@ export function AuthPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const onFinish = (values: any) => {
-    goChat()
+    goChat();
     // fetch("http://vk6.nat300.top/charGtplogin", {
     //   method: "post",
     //   body: JSON.stringify({
@@ -85,11 +82,11 @@ export function AuthPage() {
     //   .finally(() => {
 
     //   });
-    console.log('Success:', values);
+    console.log("Success:", values);
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
 
   type FieldType = {
@@ -97,25 +94,25 @@ export function AuthPage() {
     smsCode?: string;
     remember?: string;
   };
-  const [username, setUsername] = useState('')
-  const [smsCode, setSmsCode] = useState('')
-  const [second, setSecond] = useState(0)
+  const [username, setUsername] = useState("");
+  const [smsCode, setSmsCode] = useState("");
+  const [second, setSecond] = useState(0);
   const onTabChange = (key: string) => {
     console.log(key);
   };
   const sendPhoneCode = () => {
     if (!username) {
       return messageApi.open({
-        type: 'error',
-        content: '请输入账号'
+        type: "error",
+        content: "请输入账号",
       });
     }
     userStore.sendCode(username).then((res) => {
       if (res.code === 200) {
-        setSecond(60)
+        setSecond(60);
         messageApi.open({
-          type: 'success',
-          content: '发送验证码成功',
+          type: "success",
+          content: "发送验证码成功",
         });
         let remainingSeconds = 60;
 
@@ -129,12 +126,12 @@ export function AuthPage() {
         }, 1000);
       } else {
         messageApi.open({
-          type: 'error',
+          type: "error",
           content: res.msg,
         });
       }
-    })
-  }
+    });
+  };
   return (
     <>
       {contextHolder}
@@ -154,16 +151,19 @@ export function AuthPage() {
             <Form.Item<FieldType>
               label={Locale.Auth.Account}
               name="username"
-              rules={[{ required: true, message: Locale.Auth.AccountPlaceholder }]}
+              rules={[
+                { required: true, message: Locale.Auth.AccountPlaceholder },
+              ]}
             >
-              <Space.Compact style={{ width: '100%' }}>
+              <Space.Compact style={{ width: "100%" }}>
                 <Input
                   placeholder={Locale.Auth.AccountPlaceholder}
                   onChange={(e) => {
-                    userStore.update(
-                      (user) => (setUsername(e.currentTarget.value)),
+                    userStore.update((user) =>
+                      setUsername(e.currentTarget.value),
                     );
-                  }} />
+                  }}
+                />
               </Space.Compact>
             </Form.Item>
             <Form.Item<FieldType>
@@ -172,23 +172,33 @@ export function AuthPage() {
               rules={[{ required: true, message: Locale.Auth.CodePlaceholder }]}
             >
               <div>
-                <Space.Compact style={{ width: '100%' }}>
+                <Space.Compact style={{ width: "100%" }}>
                   <Input
                     placeholder={Locale.Auth.CodePlaceholder}
                     onChange={(e) => {
-                      userStore.update(
-                        (user) => (setSmsCode(e.currentTarget.value)),
+                      userStore.update((user) =>
+                        setSmsCode(e.currentTarget.value),
                       );
-                    }} />
-                  <Button type="warning" onClick={sendPhoneCode} disabled={second > 0}>
-                    {second ? second + "秒" : "发送" + Locale.Auth.Code}
-                  </Button>
+                    }}
+                  />
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Button: {
+                          defaultBg: "#ffc74a",
+                          defaultColor: "#ffffff",
+                        },
+                      },
+                    }}
+                  >
+                    <Button onClick={sendPhoneCode} disabled={second > 0}>
+                      {second ? second + "秒" : "发送" + Locale.Auth.Code}
+                    </Button>
+                  </ConfigProvider>
                 </Space.Compact>
               </div>
             </Form.Item>
-            <Form.Item<FieldType>
-              wrapperCol={{ offset: 4, span: 17 }}
-            >
+            <Form.Item<FieldType> wrapperCol={{ offset: 4, span: 17 }}>
               <Button type="primary" htmlType="submit" size="large" block>
                 登录
               </Button>

@@ -35,8 +35,8 @@ const ACCESS_CODES = (function getAccessCodes(): Set<string> {
 
   try {
     const codes = (code?.split(",") ?? [])
-      .filter((v) => !!v)
-      .map((v) => md5.hash(v.trim()));
+      .filter((v: any) => !!v)
+      .map((v: string) => md5.hash(v.trim()));
     return new Set(codes);
   } catch (e) {
     return new Set();
