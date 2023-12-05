@@ -134,6 +134,11 @@ export function SideBar(props: { className?: string }) {
   const [messageApi, contextHolder] = message.useMessage();
   const userStore = useUserStore();
   const [dataSource, setDataSource] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const qrcode = "";
+
+  
 
   const columns = [
     {
@@ -167,11 +172,37 @@ export function SideBar(props: { className?: string }) {
       fixed: "right",
       render: () => (
         <Space>
-          <Typography.Link>购买</Typography.Link>
+          <Typography.Link
+            onClick={() => {
+              purchase();
+            }}
+          >购买</Typography.Link>
         </Space>
       ),
     },
   ] as any;
+
+  const purchase = () => {
+    fetch("/v1/wxpay/qrcode/这里id我不会放", {
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const { code, data } = res
+        if (code === 200) {
+          // qrcode = data
+          console.log(data)
+          setIsModalOpen(true)
+        } else {
+          messageApi.open({
+            type: "error",
+            content: res.msg,
+          });
+        }
+      });
+  };
 
   const showModal = () => {
     fetch("/v1/member/package/validPackageList", {
@@ -201,6 +232,15 @@ export function SideBar(props: { className?: string }) {
   const handleCancel = () => {
     userStore.setModalOpen(false);
   };
+
+  const handleQrcodeOk = () => {
+    setIsModalOpen(false)
+  };
+
+  const handleQrcodeCancel = () => {
+    setIsModalOpen(false)
+  };
+  
 
   const chatStore = useChatStore();
 
@@ -335,6 +375,15 @@ export function SideBar(props: { className?: string }) {
         width={600}
       >
         <Table dataSource={dataSource} columns={columns} pagination={false} />
+      </Modal>
+      <Modal
+        title="扫码支付"
+        open={isModalOpen}
+        onOk={handleQrcodeOk}
+        onCancel={handleQrcodeCancel}
+        footer={null}
+      >
+        <img src={qrcode} alt="" />
       </Modal>
     </>
   );
