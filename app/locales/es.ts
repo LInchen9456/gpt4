@@ -54,6 +54,7 @@ const es: PartialLocaleType = {
   },
   Home: {
     NewChat: "Nuevo chat",
+    Recharge: "Recharge",
     DeleteChat: "¿Confirmar eliminación de la conversación seleccionada?",
     DeleteToast: "Chat Deleted",
     Revert: "Revert",

@@ -59,6 +59,7 @@ const jp: PartialLocaleType = {
   },
   Home: {
     NewChat: "新しいチャット",
+    Recharge: "Recharge",
     DeleteChat: "選択したチャットを削除してもよろしいですか？",
     DeleteToast: "チャットが削除されました",
     Revert: "元に戻す",

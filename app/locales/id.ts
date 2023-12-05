@@ -108,6 +108,7 @@ const id: PartialLocaleType = {
   },
   Home: {
     NewChat: "Obrolan Baru",
+    Recharge: "Recharge",
     DeleteChat: "Anda yakin ingin menghapus percakapan yang dipilih?",
     DeleteToast: "Percakapan telah dihapus",
     Revert: "Kembali",

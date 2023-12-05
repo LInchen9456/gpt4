@@ -54,6 +54,7 @@ const ru: PartialLocaleType = {
   },
   Home: {
     NewChat: "Новый чат",
+    Recharge: "Recharge",
     DeleteChat: "Вы действительно хотите удалить выбранный разговор?",
     DeleteToast: "Чат удален",
     Revert: "Отмена",

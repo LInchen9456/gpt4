@@ -293,20 +293,16 @@ export function SideBar(props: { className?: string }) {
                 <IconButton icon={<SettingsIcon />} shadow />
               </Link>
             </div>
-            <div className={styles["sidebar-action"]}>
-              <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
-                <IconButton icon={<GithubIcon />} shadow />
-              </a>
-            </div>
-            <div className={styles["sidebar-action"]}>
-              <IconButton
-                icon={<GithubIcon />}
-                onClick={() => {
-                  showModal();
-                }}
-                shadow
-              />
-            </div>
+          </div>
+          <div>
+            <IconButton
+              icon={<AddIcon />}
+              text={shouldNarrow ? undefined : Locale.Home.Recharge}
+              onClick={() => {
+                showModal();
+              }}
+              shadow
+            />
           </div>
           <div>
             <IconButton

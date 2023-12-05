@@ -54,6 +54,7 @@ const tr: PartialLocaleType = {
   },
   Home: {
     NewChat: "Yeni Sohbet",
+    Recharge: "Recharge",
     DeleteChat: "Seçili sohbeti silmeyi onaylıyor musunuz?",
     DeleteToast: "Sohbet Silindi",
     Revert: "Geri Al",

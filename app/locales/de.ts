@@ -54,6 +54,7 @@ const de: PartialLocaleType = {
   },
   Home: {
     NewChat: "Neuer Chat",
+    Recharge: "Recharge",
     DeleteChat: "Bestätigen Sie, um das ausgewählte Gespräch zu löschen?",
     DeleteToast: "Chat gelöscht",
     Revert: "Zurücksetzen",
