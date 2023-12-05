@@ -163,7 +163,7 @@ export function SideBar(props: { className?: string }) {
     },
     {
       title: "操作",
-      width: 100,
+      width: 80,
       fixed: "right",
       render: () => (
         <Space>
@@ -171,7 +171,7 @@ export function SideBar(props: { className?: string }) {
         </Space>
       ),
     },
-  ];
+  ] as any;
 
   const showModal = () => {
     fetch("/v1/member/package/validPackageList", {
@@ -180,11 +180,11 @@ export function SideBar(props: { className?: string }) {
       },
     })
       .then((res) => res.json())
-      .then((res: DangerConfig) => {
-        const { code } = res
+      .then((res) => {
+        const { code } = res;
         if (code === 200) {
           setDataSource(res.data);
-          userStore.setModalOpen(true)
+          userStore.setModalOpen(true);
         } else {
           messageApi.open({
             type: "error",
@@ -195,13 +195,11 @@ export function SideBar(props: { className?: string }) {
   };
 
   const handleOk = () => {
-
-    userStore.setModalOpen(false)
+    userStore.setModalOpen(false);
   };
 
   const handleCancel = () => {
-    userStore.setModalOpen(false)
-
+    userStore.setModalOpen(false);
   };
 
   const chatStore = useChatStore();
@@ -334,6 +332,7 @@ export function SideBar(props: { className?: string }) {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
+        width={600}
       >
         <Table dataSource={dataSource} columns={columns} pagination={false} />
       </Modal>
