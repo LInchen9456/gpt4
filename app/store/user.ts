@@ -43,6 +43,11 @@ export const useUserStore = createPersistStore(
     isLogin() {
       return !!get().token;
     },
+    logout() {
+      set({
+        token: "",
+      });
+    },
   }),
   {
     name: StoreKey.User,

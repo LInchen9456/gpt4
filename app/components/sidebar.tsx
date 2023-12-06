@@ -276,6 +276,9 @@ export function SideBar(props: { className?: string }) {
     setLoading(false);
   };
 
+  const logout= () => {
+    userStore.logout()
+  };
 
   const chatStore = useChatStore();
 
@@ -369,10 +372,18 @@ export function SideBar(props: { className?: string }) {
           </div>
           <div>
             <IconButton
-              icon={<AddIcon />}
               text={shouldNarrow ? undefined : Locale.Home.Recharge}
               onClick={() => {
                 showModal();
+              }}
+              shadow
+            />
+          </div>
+          <div>
+            <IconButton
+              text={shouldNarrow ? undefined : Locale.Home.Logout}
+              onClick={() => {
+                logout();
               }}
               shadow
             />
