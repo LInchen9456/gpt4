@@ -526,7 +526,7 @@ export function ChatActions(props: {
         text={currentModel}
         icon={<RobotIcon />}
       />
-
+伟去恶趣味
       {showModelSelector && (
         <Selector
           defaultSelectedValue={currentModel}
@@ -1297,6 +1297,7 @@ function _Chat() {
             onSearch("");
           }}
         />
+        
         <div className={styles["chat-input-panel-inner"]}>
           <textarea
             ref={inputRef}
