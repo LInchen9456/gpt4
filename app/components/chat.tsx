@@ -703,7 +703,7 @@ function _Chat() {
         Authorization: "Bearer " + userStore.token,
       },
       body: JSON.stringify({
-        model: useAppConfig.getState().modelConfig.model
+        model: config.modelConfig.model
       })
     })
     let checkData = await check.json()
