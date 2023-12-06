@@ -46,7 +46,7 @@ import {
   useAppConfig,
   DEFAULT_TOPIC,
   ModelType,
-  useUserStore
+  useUserStore,
 } from "../store";
 
 import {
@@ -55,6 +55,8 @@ import {
   autoGrowTextArea,
   useMobileScreen,
 } from "../utils";
+
+import { Upload, Button } from "antd";
 
 import dynamic from "next/dynamic";
 
@@ -375,7 +377,18 @@ function ChatAction(props: {
     </div>
   );
 }
-
+const uploadProps = {
+  name: "file",
+  transformFile(file: Blob) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log(reader.result);
+      };
+    });
+  },
+};
 function useScrollToBottom() {
   // for auto-scroll
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -526,7 +539,11 @@ export function ChatActions(props: {
         text={currentModel}
         icon={<RobotIcon />}
       />
-伟去恶趣味
+      {/* 上传组件开始 */}
+      <Upload {...uploadProps}>
+        <Button>Click to Upload</Button>
+      </Upload>
+      {/* 上传组件结束 */}
       {showModelSelector && (
         <Selector
           defaultSelectedValue={currentModel}
@@ -703,13 +720,13 @@ function _Chat() {
         Authorization: "Bearer " + userStore.token,
       },
       body: JSON.stringify({
-        model: config.modelConfig.model
-      })
-    })
-    let checkData = await check.json()
-    if(checkData.code == 500){
-      userStore.setModalOpen(true)
-      return
+        model: config.modelConfig.model,
+      }),
+    });
+    let checkData = await check.json();
+    if (checkData.code == 500) {
+      userStore.setModalOpen(true);
+      return;
     }
 
     if (userInput.trim() === "") return;
@@ -1297,7 +1314,7 @@ function _Chat() {
             onSearch("");
           }}
         />
-        
+
         <div className={styles["chat-input-panel-inner"]}>
           <textarea
             ref={inputRef}
