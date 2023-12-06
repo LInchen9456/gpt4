@@ -259,13 +259,13 @@ export function SideBar(props: { className?: string }) {
         if (code === 200) {
           messageApi.open({
             type: "success",
-            content: res.msg,
+            content: res.data,
           });
           setIsModalOpen(false);
         } else {
           messageApi.open({
             type: "error",
-            content: res.msg,
+            content: res.data,
           });
         }
       });
@@ -418,10 +418,10 @@ export function SideBar(props: { className?: string }) {
         onCancel={handleQrcodeCancel}
         footer={[
           <Button key="back" onClick={handlePayCancel}>
-            未支付
+            取消支付
           </Button>,
           <Button key="submit" type="primary" loading={loading} onClick={handlePayOk}>
-            已支付
+            支付成功
           </Button>,
         ]}
       >
