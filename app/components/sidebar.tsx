@@ -133,7 +133,6 @@ function useDragSideBar() {
 export function SideBar(props: { className?: string }) {
   const [messageApi, contextHolder] = message.useMessage();
   const userStore = useUserStore();
-  const [dataSource, setDataSource] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [qrcode, setQrcode] = useState("");
   const [ordersn, setOrdersn] = useState("");
@@ -207,24 +206,7 @@ export function SideBar(props: { className?: string }) {
   };
 
   const showModal = () => {
-    fetch("/v1/member/package/validPackageList", {
-      headers: {
-        Authorization: "Bearer " + userStore.token,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        const { code } = res;
-        if (code === 200) {
-          setDataSource(res.data);
-          userStore.setModalOpen(true);
-        } else {
-          messageApi.open({
-            type: "error",
-            content: res.msg,
-          });
-        }
-      });
+    userStore.setModalOpen(true);
   };
 
   const handleOk = () => {
@@ -276,8 +258,10 @@ export function SideBar(props: { className?: string }) {
     setLoading(false);
   };
 
-  const logout= () => {
-    userStore.logout()
+  const logout= async () => {
+    if (await showConfirm(Locale.Home.LogoutConfirm)) {
+      userStore.logout()
+    }
   };
 
   const chatStore = useChatStore();
@@ -372,6 +356,7 @@ export function SideBar(props: { className?: string }) {
           </div>
           <div>
             <IconButton
+              type="primary"
               text={shouldNarrow ? undefined : Locale.Home.Recharge}
               onClick={() => {
                 showModal();
@@ -381,6 +366,7 @@ export function SideBar(props: { className?: string }) {
           </div>
           <div>
             <IconButton
+              type="danger"
               text={shouldNarrow ? undefined : Locale.Home.Logout}
               onClick={() => {
                 logout();
@@ -420,7 +406,7 @@ export function SideBar(props: { className?: string }) {
         footer={null}
         width={600}
       >
-        <Table dataSource={dataSource} columns={columns} pagination={false} />
+        <Table dataSource={userStore.validPackageList} columns={columns} pagination={false} />
       </Modal>
       <Modal
         title="扫码支付"
