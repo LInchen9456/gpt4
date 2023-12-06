@@ -134,6 +134,8 @@ export function SideBar(props: { className?: string }) {
   const [messageApi, contextHolder] = message.useMessage();
   const userStore = useUserStore();
   const [dataSource, setDataSource] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [qrcode, setQrcode] = useState(false);
 
   const columns = [
     {
@@ -165,13 +167,40 @@ export function SideBar(props: { className?: string }) {
       title: "操作",
       width: 80,
       fixed: "right",
-      render: () => (
+      render: (row: { id: string }) => (
         <Space>
-          <Typography.Link>购买</Typography.Link>
+          <Typography.Link
+            onClick={() => {
+              purchase(row);
+            }}
+          >
+            购买
+          </Typography.Link>
         </Space>
       ),
     },
   ] as any;
+
+  const purchase = (row: { id: string }) => {
+    fetch("/v1/wxpay/qrcode/" + row.id, {
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const { code, data } = res;
+        if (code === 200) {
+          setQrcode(data);
+          setIsModalOpen(true);
+        } else {
+          messageApi.open({
+            type: "error",
+            content: res.msg,
+          });
+        }
+      });
+  };
 
   const showModal = () => {
     fetch("/v1/member/package/validPackageList", {
@@ -200,6 +229,14 @@ export function SideBar(props: { className?: string }) {
 
   const handleCancel = () => {
     userStore.setModalOpen(false);
+  };
+
+  const handleQrcodeOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleQrcodeCancel = () => {
+    setIsModalOpen(false);
   };
 
   const chatStore = useChatStore();
@@ -335,6 +372,15 @@ export function SideBar(props: { className?: string }) {
         width={600}
       >
         <Table dataSource={dataSource} columns={columns} pagination={false} />
+      </Modal>
+      <Modal
+        title="扫码支付"
+        open={isModalOpen}
+        onOk={handleQrcodeOk}
+        onCancel={handleQrcodeCancel}
+        footer={null}
+      >
+        <img src={qrcode} alt="" />
       </Modal>
     </>
   );
