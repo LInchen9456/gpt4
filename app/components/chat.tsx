@@ -340,7 +340,6 @@ function ChatAction(props: {
     full: 16,
     icon: 16,
   });
-
   function updateWidth() {
     if (!iconRef.current || !textRef.current) return;
     const getWidth = (dom: HTMLDivElement) => dom.getBoundingClientRect().width;
@@ -377,18 +376,6 @@ function ChatAction(props: {
     </div>
   );
 }
-const uploadProps = {
-  name: "file",
-  transformFile(file: Blob) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        console.log(reader.result);
-      };
-    });
-  },
-};
 function useScrollToBottom() {
   // for auto-scroll
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -428,6 +415,19 @@ export function ChatActions(props: {
   const config = useAppConfig();
   const navigate = useNavigate();
   const chatStore = useChatStore();
+  const [uploadImg, setUploadImg] = useState("");
+  const uploadProps = {
+    name: "file",
+    transformFile(file: Blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader() as any;
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          setUploadImg(reader.result);
+        };
+      });
+    },
+  } as any;
 
   // switch themes
   const theme = config.theme;
@@ -541,7 +541,11 @@ export function ChatActions(props: {
       />
       {/* 上传组件开始 */}
       <Upload {...uploadProps}>
-        <Button>Click to Upload</Button>
+        {uploadImg ? (
+          <img src={uploadImg} style={{ width: "30px", height: "30px" }} />
+        ) : (
+          <Button>+</Button>
+        )}
       </Upload>
       {/* 上传组件结束 */}
       {showModelSelector && (
