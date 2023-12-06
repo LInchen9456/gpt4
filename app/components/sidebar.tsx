@@ -1,5 +1,4 @@
 import { useEffect, useRef, useMemo, useState } from "react";
-
 import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
@@ -12,6 +11,7 @@ import DeleteIcon from "../icons/delete.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
 import DragIcon from "../icons/drag.svg";
+import QRCode  from 'qrcode.react';
 
 import Locale from "../locales";
 
@@ -31,7 +31,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
-import { Modal, Table, Typography, Space } from "antd";
+import { Modal, Table, Typography, Space, Button } from "antd";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -135,7 +135,9 @@ export function SideBar(props: { className?: string }) {
   const userStore = useUserStore();
   const [dataSource, setDataSource] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [qrcode, setQrcode] = useState(false);
+  const [qrcode, setQrcode] = useState("");
+  const [ordersn, setOrdersn] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const columns = [
     {
@@ -191,7 +193,9 @@ export function SideBar(props: { className?: string }) {
       .then((res) => {
         const { code, data } = res;
         if (code === 200) {
-          setQrcode(data);
+          setQrcode(data.qrcode);
+          setOrdersn(data.ordersn);
+          
           setIsModalOpen(true);
         } else {
           messageApi.open({
@@ -238,6 +242,40 @@ export function SideBar(props: { className?: string }) {
   const handleQrcodeCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handlePayOk = () => {
+    setLoading(true);
+
+    ordersn
+    fetch("/v1/wxpay/query/" + ordersn, {
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setLoading(false);
+        const { code, data } = res;
+        if (code === 200) {
+          messageApi.open({
+            type: "success",
+            content: res.msg,
+          });
+          setIsModalOpen(false);
+        } else {
+          messageApi.open({
+            type: "error",
+            content: res.msg,
+          });
+        }
+      });
+  };
+
+  const handlePayCancel = () => {
+    setIsModalOpen(false);
+    setLoading(false);
+  };
+
 
   const chatStore = useChatStore();
 
@@ -378,9 +416,20 @@ export function SideBar(props: { className?: string }) {
         open={isModalOpen}
         onOk={handleQrcodeOk}
         onCancel={handleQrcodeCancel}
-        footer={null}
+        footer={[
+          <Button key="back" onClick={handlePayCancel}>
+            未支付
+          </Button>,
+          <Button key="submit" type="primary" loading={loading} onClick={handlePayOk}>
+            已支付
+          </Button>,
+        ]}
       >
-        <img src={qrcode} alt="" />
+        <QRCode
+            value={qrcode}  //生成二维码的内容
+            size={256} //二维码尺寸
+            fgColor="#000000"  //二维码颜色
+        />
       </Modal>
     </>
   );
