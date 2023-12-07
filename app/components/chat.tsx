@@ -34,6 +34,7 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
+import UploadIcon from "../icons/upload.svg";
 
 import {
   ChatMessage,
@@ -542,9 +543,13 @@ export function ChatActions(props: {
       {/* 上传组件开始 */}
       <Upload {...uploadProps}>
         {uploadImg ? (
-          <img src={uploadImg} style={{ width: "30px", height: "30px" }} />
+          <img src={uploadImg} style={{ width: "100px", height: "100px" }} />
         ) : (
-          <Button>+</Button>
+          <ChatAction
+            onClick={() => {}}
+            text="上传图片"
+            icon={<UploadIcon />}
+          />
         )}
       </Upload>
       {/* 上传组件结束 */}
