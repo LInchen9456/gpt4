@@ -198,11 +198,11 @@ export function AuthPage() {
                 </Space.Compact>
               </div>
             </Form.Item>
-            <Form.Item<FieldType> wrapperCol={{ offset: 4, span: 17 }}>
+            <div style={{ display: "flex", justifyContent: "center" }}>
               <Button type="primary" htmlType="submit" size="large" block>
                 登录
               </Button>
-            </Form.Item>
+            </div>
           </Form>
         </div>
       </div>
