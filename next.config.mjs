@@ -84,6 +84,10 @@ if (mode !== "export") {
         source: "/v1/:path*",
         destination: "http://vk6.nat300.top/api/:path*",
       },
+      // {
+      //   source: "/v1/:path*",
+      //   destination: "http://127.0.0.1:9090/api/:path*",
+      // },
     ];
 
     return {
