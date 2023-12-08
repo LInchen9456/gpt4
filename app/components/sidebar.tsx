@@ -3,6 +3,7 @@ import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
+import UserinfoIcon from "../icons/userinfo.svg";
 import GithubIcon from "../icons/github.svg";
 import ChatGptIcon from "../icons/chatgpt.svg";
 import AddIcon from "../icons/add.svg";
@@ -31,7 +32,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
 import { showConfirm, showToast } from "./ui-lib";
-import { Modal, Table, Typography, Space, Button } from "antd";
+import { Modal, Table, Typography, Space, Button, Flex } from "antd";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -135,9 +136,15 @@ export function SideBar(props: { className?: string }) {
   const [messageApi, contextHolder] = message.useMessage();
   const userStore = useUserStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPersonalModalOpen, setIsPersonalModalOpen] = useState(false);
   const [qrcode, setQrcode] = useState("");
   const [ordersn, setOrdersn] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userinfo, setUserinfo] = useState({
+    nickname: "",
+    expirationTime3: "",
+    expirationTime4: "",
+  });
 
   const columns = [
     {
@@ -227,10 +234,6 @@ export function SideBar(props: { className?: string }) {
       });
   };
 
-  const showModal = () => {
-    userStore.setModalOpen(true);
-  };
-
   const handleOk = () => {
     userStore.setModalOpen(false);
   };
@@ -246,6 +249,30 @@ export function SideBar(props: { className?: string }) {
   const handleQrcodeCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handlePersonalOk = () => {
+    setIsPersonalModalOpen(false)
+  };
+
+  const handlePersonalCancel = () => {
+    setIsPersonalModalOpen(false)
+  };
+
+  const personalModalOpen = () => {
+    fetch("/v1/chat/info", {
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        const { code, data } = res;
+        if (code == 200) {
+          setUserinfo(data)
+          setIsPersonalModalOpen(true)
+        }
+      })
+  }
 
   const handlePayOk = async () => {
     setLoading(true);
@@ -382,28 +409,16 @@ export function SideBar(props: { className?: string }) {
             </div>
           </div>
           {userStore.token && (
-            <>
-              <div>
-                <IconButton
-                  type="primary"
-                  text={shouldNarrow ? undefined : Locale.Home.Recharge}
-                  onClick={() => {
-                    showModal();
-                  }}
-                  shadow
-                />
-              </div>
-              <div>
-                <IconButton
-                  type="danger"
-                  text={shouldNarrow ? undefined : Locale.Home.Logout}
-                  onClick={() => {
-                    logout();
-                  }}
-                  shadow
-                />
-              </div>
-            </>
+            <div>
+              <IconButton
+                icon={<UserinfoIcon />}
+                text={shouldNarrow ? undefined : Locale.Home.Personal}
+                onClick={() => {
+                  personalModalOpen()
+                }}
+                shadow
+              />
+            </div>
           )}
           <div>
             <IconButton
@@ -458,6 +473,33 @@ export function SideBar(props: { className?: string }) {
             size={256} //二维码尺寸
             fgColor="#000000"  //二维码颜色
         />
+      </Modal>
+      <Modal
+        title={Locale.Home.Personal}
+        open={isPersonalModalOpen}
+        onOk={handlePersonalOk}
+        onCancel={handlePersonalCancel}
+        footer={null}
+        width={600}
+      >
+        <div style={{ margin: '20px 0' }}>
+          {userinfo.expirationTime3 && (
+            <div>GPT3过期时间：{userinfo.expirationTime3}</div>
+          )}
+          {userinfo.expirationTime4 && (
+            <div>GPT4过期时间：{userinfo.expirationTime4}</div>
+          )}
+        </div>
+        <div>
+          <Flex gap="small" align="center" wrap="wrap">
+            <Button type="primary" onClick={() => {
+              userStore.setModalOpen(true)
+            }}>{Locale.Home.Recharge}</Button>
+            <Button danger onClick={() => {
+              logout()
+            }}>{Locale.Home.Logout}</Button>
+          </Flex>
+        </div>
       </Modal>
     </>
   );
