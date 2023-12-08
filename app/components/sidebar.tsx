@@ -36,6 +36,7 @@ import { Modal, Table, Typography, Space, Button } from "antd";
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
 });
+let timer: any
 
 function useHotKey() {
   const chatStore = useChatStore();
@@ -194,6 +195,27 @@ export function SideBar(props: { className?: string }) {
         if (code === 200) {
           setQrcode(data.qrcode);
           setOrdersn(data.ordersn);
+
+          let counter = 1;
+          timer = setInterval(async function() {
+            // console.log("第 " + counter + " 秒");
+
+            counter++;
+            let result = await query(data.ordersn)
+            let json = await result.json();
+            if(json.code == 200){
+              clearInterval(timer); 
+              messageApi.open({
+                type: "success",
+                content: json.data,
+              });
+              setIsModalOpen(false);
+            }
+            if (counter > 30) {
+              clearInterval(timer); 
+            }
+          }, 1000);
+
           
           setIsModalOpen(true);
         } else {
@@ -225,37 +247,42 @@ export function SideBar(props: { className?: string }) {
     setIsModalOpen(false);
   };
 
-  const handlePayOk = () => {
+  const handlePayOk = async () => {
     setLoading(true);
+    let result = await query()
+    let json = await result.json();
+    
+    setLoading(false);
 
-    ordersn
-    fetch("/v1/wxpay/query/" + ordersn, {
+    const { code, data } = json;
+    if (code === 200) {
+      messageApi.open({
+        type: "success",
+        content: data,
+      });
+      setIsModalOpen(false);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: data,
+      });
+    }
+
+  };
+  function query(o = null){
+    let sn = o? o: ordersn
+    console.log(sn)
+    return fetch("/v1/wxpay/query/" + sn, {
       headers: {
         Authorization: "Bearer " + userStore.token,
       },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setLoading(false);
-        const { code, data } = res;
-        if (code === 200) {
-          messageApi.open({
-            type: "success",
-            content: res.data,
-          });
-          setIsModalOpen(false);
-        } else {
-          messageApi.open({
-            type: "error",
-            content: res.data,
-          });
-        }
-      });
-  };
+    }) ;
+  }
 
   const handlePayCancel = () => {
     setIsModalOpen(false);
     setLoading(false);
+    clearInterval(timer); 
   };
 
   const logout= async () => {
@@ -354,26 +381,30 @@ export function SideBar(props: { className?: string }) {
               </Link>
             </div>
           </div>
-          <div>
-            <IconButton
-              type="primary"
-              text={shouldNarrow ? undefined : Locale.Home.Recharge}
-              onClick={() => {
-                showModal();
-              }}
-              shadow
-            />
-          </div>
-          <div>
-            <IconButton
-              type="danger"
-              text={shouldNarrow ? undefined : Locale.Home.Logout}
-              onClick={() => {
-                logout();
-              }}
-              shadow
-            />
-          </div>
+          {userStore.token && (
+            <>
+              <div>
+                <IconButton
+                  type="primary"
+                  text={shouldNarrow ? undefined : Locale.Home.Recharge}
+                  onClick={() => {
+                    showModal();
+                  }}
+                  shadow
+                />
+              </div>
+              <div>
+                <IconButton
+                  type="danger"
+                  text={shouldNarrow ? undefined : Locale.Home.Logout}
+                  onClick={() => {
+                    logout();
+                  }}
+                  shadow
+                />
+              </div>
+            </>
+          )}
           <div>
             <IconButton
               icon={<AddIcon />}
