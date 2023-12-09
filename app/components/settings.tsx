@@ -912,7 +912,7 @@ export function Settings() {
             </ListItem>
           )}
 
-          {!accessStore.hideUserApiKey && (
+          {/* {!accessStore.hideUserApiKey && (
             <>
               {
                 // Conditionally render the following ListItem based on clientConfig.isApp
@@ -1086,7 +1086,7 @@ export function Settings() {
                 />
               )}
             </ListItem>
-          ) : null}
+          ) : null} */}
 
           <ListItem
             title={Locale.Settings.Access.CustomModel.Title}
