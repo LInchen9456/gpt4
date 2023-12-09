@@ -34,7 +34,8 @@ import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import RobotIcon from "../icons/robot.svg";
-
+import UploadIcon from "../icons/upload.svg";
+import { message } from "antd";
 import {
   ChatMessage,
   SubmitKey,
@@ -542,9 +543,13 @@ export function ChatActions(props: {
       {/* 上传组件开始 */}
       <Upload {...uploadProps}>
         {uploadImg ? (
-          <img src={uploadImg} style={{ width: "30px", height: "30px" }} />
+          <img src={uploadImg} style={{ width: "100px", height: "100px" }} />
         ) : (
-          <Button>+</Button>
+          <ChatAction
+            onClick={() => {}}
+            text="上传图片"
+            icon={<UploadIcon />}
+          />
         )}
       </Upload>
       {/* 上传组件结束 */}
@@ -634,6 +639,7 @@ export function EditMessageModal(props: { onClose: () => void }) {
 
 function _Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
+  const [messageApi, contextHolder] = message.useMessage();
 
   const chatStore = useChatStore();
   const session = chatStore.currentSession();
@@ -729,7 +735,19 @@ function _Chat() {
       }),
     });
     let checkData = await check.json();
-    if (checkData.code == 500) {
+    // 未认证 401
+    if(checkData.code == 401){
+      navigate(Path.Auth);
+      return
+    }else if(checkData.code == 502 || checkData.code == 503){
+      // key没钱了  key异常
+      messageApi.open({
+        type: "error",
+        content: checkData.data,
+      });
+      return
+    }else if(checkData.code == 500){
+      // 需要购买会员
       userStore.setModalOpen(true);
       return;
     }
@@ -1087,6 +1105,8 @@ function _Chat() {
   }, []);
 
   return (
+    <>
+    {contextHolder}
     <div className={styles.chat} key={session.id}>
       <div className="window-header" data-tauri-drag-region>
         {isMobileScreen && (
@@ -1358,6 +1378,7 @@ function _Chat() {
         />
       )}
     </div>
+    </>
   );
 }
 

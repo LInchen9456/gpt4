@@ -125,6 +125,7 @@ const cn = {
   Home: {
     NewChat: "新的聊天",
     Recharge: "充值",
+    Personal: "个人中心",
     Logout: "退出登录",
     LogoutConfirm: "确认退出登录？",
     DeleteChat: "确认删除选中的对话？",

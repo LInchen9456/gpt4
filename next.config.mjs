@@ -84,6 +84,10 @@ if (mode !== "export") {
         source: "/v1/:path*",
         destination: "http://127.0.0.1:8080/api/:path*",
       },
+      // {
+      //   source: "/v1/:path*",
+      //   destination: "http://127.0.0.1:9090/api/:path*",
+      // },
     ];
 
     return {
