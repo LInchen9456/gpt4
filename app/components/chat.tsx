@@ -722,6 +722,7 @@ function _Chat() {
       method: "POST",
       headers: {
         Authorization: "Bearer " + userStore.token,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: config.modelConfig.model,
