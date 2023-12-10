@@ -731,7 +731,7 @@ function _Chat() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: config.modelConfig.model,
+        model: session.mask.modelConfig.model,
       }),
     });
     let checkData = await check.json();
