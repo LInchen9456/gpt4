@@ -417,6 +417,7 @@ export function ChatActions(props: {
   const navigate = useNavigate();
   const chatStore = useChatStore();
   const [uploadImg, setUploadImg] = useState("");
+  const userStore = useUserStore();
   const uploadProps = {
     name: "file",
     transformFile(file: Blob) {
@@ -425,6 +426,10 @@ export function ChatActions(props: {
         reader.readAsDataURL(file);
         reader.onload = () => {
           setUploadImg(reader.result);
+          userStore.update(
+            (data) =>
+              (data.image = reader.result),
+          );
         };
       });
     },
@@ -743,7 +748,7 @@ function _Chat() {
       // key没钱了  key异常
       messageApi.open({
         type: "error",
-        content: checkData.data,
+        content: checkData.msg,
       });
       return
     }else if(checkData.code == 500){
@@ -751,6 +756,12 @@ function _Chat() {
       userStore.setModalOpen(true);
       return;
     }
+
+    accessStore.update(
+      (access) =>
+        (access.openaiApiKey = checkData.data),
+    );
+
 
     if (userInput.trim() === "") return;
     const matchCommand = chatCommands.match(userInput);

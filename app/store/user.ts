@@ -6,7 +6,8 @@ const DEFAULT_ACCESS_STATE = {
   userinfo: {},
   token: "",
   modalOpen: false,
-  validPackageList: []
+  validPackageList: [],
+  image: ""
 };
 
 export const useUserStore = createPersistStore(

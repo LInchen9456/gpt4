@@ -11,7 +11,7 @@ export type ChatModel = ModelType;
 
 export interface RequestMessage {
   role: MessageRole;
-  content: string;
+  content: any;
 }
 
 export interface LLMConfig {

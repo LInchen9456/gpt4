@@ -6,7 +6,7 @@ import {
   REQUEST_TIMEOUT_MS,
   ServiceProvider,
 } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
+import { useAccessStore, useAppConfig, useChatStore, useUserStore } from "@/app/store";
 
 import { ChatOptions, getHeaders, LLMApi, LLMModel, LLMUsage } from "../api";
 import Locale from "../../locales";
@@ -67,10 +67,12 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
-    const messages = options.messages.map((v) => ({
+    const userStore = useUserStore.getState();
+    let messages = options.messages.map((v) => ({
       role: v.role,
       content: v.content,
     }));
+    
 
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
@@ -80,7 +82,25 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
-    
+    if(userStore.image && modelConfig.model == "gpt-4-vision-preview"){
+      let message = options.messages[options.messages.length - 1]
+      messages = [{
+        "role": message.role,
+        "content": [
+          {
+            "type": "text",
+            "text": message.content
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": userStore.image
+            }
+          }
+        ]
+      }];
+    }
+
     const requestPayload = {
       messages,
       stream: options.config.stream,
@@ -100,12 +120,15 @@ export class ChatGPTApi implements LLMApi {
     options.onController?.(controller);
 
     try {
-      const chatPath = OpenaiPath.ChatPath;
+      const chatPath = this.path(OpenaiPath.ChatPath);
+      let headers = getHeaders()
+
+      headers.Authorization = "Bearer " +  useAccessStore.getState().openaiApiKey
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
-        headers: getHeaders(),
+        headers: headers,
       };
 
       // make a fetch request
@@ -179,9 +202,9 @@ export class ChatGPTApi implements LLMApi {
                 extraInfo = prettyObject(resJson);
               } catch {}
 
-              // if (res.status === 401) {
-              //   responseTexts.push(Locale.Error.Unauthorized);
-              // }
+              if (res.status === 401) {
+                responseTexts.push(Locale.Error.Unauthorized);
+              }
 
               if (extraInfo) {
                 responseTexts.push(extraInfo);
@@ -193,7 +216,6 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onmessage(msg) {
-            
             if (msg.data === "[DONE]" || finished) {
               return finish();
             }
@@ -264,9 +286,9 @@ export class ChatGPTApi implements LLMApi {
       }),
     ]);
 
-    // if (used.status === 401) {
-    //   throw new Error(Locale.Error.Unauthorized);
-    // }
+    if (used.status === 401) {
+      throw new Error(Locale.Error.Unauthorized);
+    }
 
     if (!used.ok || !subs.ok) {
       throw new Error("Failed to query usage from openai");
