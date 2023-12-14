@@ -6,7 +6,7 @@ import {
   REQUEST_TIMEOUT_MS,
   ServiceProvider,
 } from "@/app/constant";
-import { useAccessStore, useAppConfig, useChatStore, useUserStore } from "@/app/store";
+import { useAccessStore, useAppConfig, useChatStore } from "@/app/store";
 
 import { ChatOptions, getHeaders, LLMApi, LLMModel, LLMUsage } from "../api";
 import Locale from "../../locales";
@@ -67,7 +67,6 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
-    const userStore = useUserStore.getState();
     let messages = options.messages.map((v) => ({
       role: v.role,
       content: v.content,
@@ -82,7 +81,8 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
-    if(userStore.image && modelConfig.model == "gpt-4-vision-preview"){
+    let image = useChatStore.getState().image;
+    if(image && modelConfig.model == "gpt-4-vision-preview"){
       let message = options.messages[options.messages.length - 1]
       messages = [{
         "role": message.role,
@@ -94,7 +94,7 @@ export class ChatGPTApi implements LLMApi {
           {
             "type": "image_url",
             "image_url": {
-              "url": userStore.image
+              "url": image
             }
           }
         ]
@@ -109,7 +109,7 @@ export class ChatGPTApi implements LLMApi {
       presence_penalty: modelConfig.presence_penalty,
       frequency_penalty: modelConfig.frequency_penalty,
       top_p: modelConfig.top_p,
-      // max_tokens: Math.max(modelConfig.max_tokens, 1024),
+      max_tokens: Math.max(modelConfig.max_tokens, 1024),
       // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
     };
 

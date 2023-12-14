@@ -119,6 +119,7 @@ function fillTemplateWith(input: string, modelConfig: ModelConfig) {
 const DEFAULT_CHAT_STATE = {
   sessions: [createEmptySession()],
   currentSessionIndex: 0,
+  image: ""
 };
 
 export const useChatStore = createPersistStore(
@@ -316,10 +317,22 @@ export const useChatStore = createPersistStore(
           },
           onFinish(message) {
             botMessage.streaming = false;
-            useUserStore().update(
-              (data) =>
-                (data.image = ""),
-            );
+            // set(() => ({
+            //   image: "",
+            // }));
+
+            // fetch("/v1/chat/number", {
+            //   method: "POST",
+            //   headers: {
+            //     Authorization: "Bearer " + useUserStore().token,
+            //     "Content-Type": "application/json",
+            //   },
+            //   body: JSON.stringify({
+            //     model: session.mask.modelConfig.model,
+            //   }),
+            // });
+
+            
             if (message) {
               botMessage.content = message;
               get().onNewMessage(botMessage);

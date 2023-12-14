@@ -416,7 +416,6 @@ export function ChatActions(props: {
   const config = useAppConfig();
   const navigate = useNavigate();
   const chatStore = useChatStore();
-  const userStore = useUserStore();
   const uploadProps = {
     name: "file",
     transformFile(file: Blob) {
@@ -424,7 +423,7 @@ export function ChatActions(props: {
         const reader = new FileReader() as any;
         reader.readAsDataURL(file);
         reader.onload = () => {
-          userStore.update(
+          chatStore.update(
             (data) =>
               (data.image = reader.result),
           );
@@ -544,17 +543,30 @@ export function ChatActions(props: {
         icon={<RobotIcon />}
       />
       {/* 上传组件开始 */}
-      <Upload {...uploadProps}>
-        {userStore.image ? (
-          <img src={userStore.image} style={{ width: "100px", height: "100px" }} />
-        ) : (
+     
+      {chatStore.image ? (
+        <div style={{ position: "relative" }}>
+          <Upload {...uploadProps}>
+            <img src={chatStore.image} style={{ width: "100px", height: "100px" }} />
+          </Upload>
+          <div style={{ position: "absolute", top: "-5px", right: "5px", fontSize: "25px", color: "#000000" }}
+            onClick={() => {
+              chatStore.update(
+                (data) =>
+                  (data.image = ""),
+              );
+            }}
+          >x</div>
+        </div>
+      ) : (
+        <Upload {...uploadProps}>
           <ChatAction
             onClick={() => {}}
             text="上传图片"
             icon={<UploadIcon />}
           />
-        )}
-      </Upload>
+        </Upload>
+      )}
       {/* 上传组件结束 */}
       {showModelSelector && (
         <Selector
