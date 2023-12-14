@@ -16,8 +16,8 @@ import { ChatControllerPool } from "../client/controller";
 import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
 import { nanoid } from "nanoid";
-import { createPersistStore } from "../utils/store";
-
+import { createPersistStore} from "../utils/store";
+import { useUserStore } from "@/app/store";
 export type ChatMessage = RequestMessage & {
   date: string;
   streaming?: boolean;
@@ -316,6 +316,10 @@ export const useChatStore = createPersistStore(
           },
           onFinish(message) {
             botMessage.streaming = false;
+            useUserStore().update(
+              (data) =>
+                (data.image = ""),
+            );
             if (message) {
               botMessage.content = message;
               get().onNewMessage(botMessage);

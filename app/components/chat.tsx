@@ -416,7 +416,6 @@ export function ChatActions(props: {
   const config = useAppConfig();
   const navigate = useNavigate();
   const chatStore = useChatStore();
-  const [uploadImg, setUploadImg] = useState("");
   const userStore = useUserStore();
   const uploadProps = {
     name: "file",
@@ -425,7 +424,6 @@ export function ChatActions(props: {
         const reader = new FileReader() as any;
         reader.readAsDataURL(file);
         reader.onload = () => {
-          setUploadImg(reader.result);
           userStore.update(
             (data) =>
               (data.image = reader.result),
@@ -547,8 +545,8 @@ export function ChatActions(props: {
       />
       {/* 上传组件开始 */}
       <Upload {...uploadProps}>
-        {uploadImg ? (
-          <img src={uploadImg} style={{ width: "100px", height: "100px" }} />
+        {userStore.image ? (
+          <img src={userStore.image} style={{ width: "100px", height: "100px" }} />
         ) : (
           <ChatAction
             onClick={() => {}}
