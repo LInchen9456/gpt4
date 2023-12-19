@@ -7,7 +7,7 @@ import { type Metadata } from "next";
 import StyledComponentsRegistry from '../lib/AntdRegistry';
 
 export const metadata: Metadata = {
-  title: "ChatGPT Next Web",
+  title: "蓝风AI",
   description: "Your personal ChatGPT Chat Bot.",
   viewport: {
     width: "device-width",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "#151515" },
   ],
   appleWebApp: {
-    title: "ChatGPT Next Web",
+    title: "蓝风AI",
     statusBarStyle: "default",
   },
 };
